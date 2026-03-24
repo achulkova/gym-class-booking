@@ -1,4 +1,4 @@
-# Projekt - Individuell uppgift 3: Notes API med Spring Security
+# Projekt - Individuell uppgift 4: Gym Class Booking API
 
 ## Förutsättningar
 
