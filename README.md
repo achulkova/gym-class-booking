@@ -19,7 +19,7 @@ vara uppfyllda.
 
 ## Betyg
 
-Sträcker sig från IG till G.
+Sträcker sig från IG till VG.
 
 ## Sista inlämningstid
 
