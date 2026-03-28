@@ -1,10 +1,10 @@
-package se.edugrade._5_java_enterprice_assignment_4_individual;
+package se.edugrade.java25.enterprise.gym;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApplicationTests {
+class GymApplicationTests {
 
     @Test
     void contextLoads() {
