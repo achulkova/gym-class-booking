@@ -1,0 +1,5 @@
+### ===== HEALTH CHECK =====
+
+### Alive (public)
+GET http://localhost:8080/alive
+Authorization: Basic user bbd6d32b-6c0a-4d4f-8053-3562ba884f6a
