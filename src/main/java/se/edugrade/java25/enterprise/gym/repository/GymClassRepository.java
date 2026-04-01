@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface GymClassRepository extends JpaRepository<GymClass, Long> {
 
-    List<GymClass> findByInstructor(String instructor);
-    List<GymClass> findByDayOfWeek(String dayOfWeek);
+    List<GymClass> findByInstructorIgnoreCase(String instructor);
+    List<GymClass> findByDayOfWeekIgnoreCase(String dayOfWeek);
 
 }
