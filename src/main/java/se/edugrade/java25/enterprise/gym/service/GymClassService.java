@@ -11,6 +11,7 @@ import se.edugrade.java25.enterprise.gym.dto.GymClassResponse;
 import se.edugrade.java25.enterprise.gym.exception.GymClassNotFoundException;
 import se.edugrade.java25.enterprise.gym.model.Booking;
 import se.edugrade.java25.enterprise.gym.model.GymClass;
+import se.edugrade.java25.enterprise.gym.repository.BookingRepository;
 import se.edugrade.java25.enterprise.gym.repository.GymClassRepository;
 
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.List;
 public class GymClassService {
 
     private final GymClassRepository gymClassRepository;
+    private final BookingRepository bookingRepository;
 
     // FIND
     public Page<GymClassResponse> findAll(Pageable pageable) {
@@ -113,5 +115,21 @@ public class GymClassService {
                 booking.getBookedAt(),
                 booking.getGymClass().getId()
         );
+    }
+
+    // VG methods
+    public int getSpotsRemaining(Long id) {
+        GymClass gymClass = gymClassRepository.findById(id)
+                .orElseThrow(() -> new GymClassNotFoundException(id));
+        long bookedSpots = bookingRepository.countByGymClassId(id);
+        return gymClass.getMaxParticipants() - (int) bookedSpots;
+    }
+
+    public List<GymClassResponse> findAvailableClasses() {
+        return gymClassRepository.findAll()
+                .stream()
+                .filter(gymClass -> getSpotsRemaining(gymClass.getId()) > 0)
+                .map(this::toResponse)
+                .toList();
     }
 }
