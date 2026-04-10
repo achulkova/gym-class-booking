@@ -1,5 +1,224 @@
+### ===== Login as ADMIN =====
+# @name adminLogin
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {% client.global.set("adminToken", response.body.accessToken); %}
+
+### Register new USER - 201
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "password"
+}
+
+### ===== Login as USER ===== - 200
+# @name userLogin
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "user",
+  "password": "password"
+}
+
+> {% client.global.set("userToken", response.body.accessToken); %}
+
 ### ===== HEALTH CHECK =====
 
 ### Alive (public)
 GET http://localhost:8080/alive
-Authorization: Basic user bbd6d32b-6c0a-4d4f-8053-3562ba884f6a
+
+### ===== PUBLIC ENDPOINTS (NO AUTH, PUBLIC) =====
+
+### Get all classes - 200
+GET http://localhost:8080/classes?page=0&size=10&sort=name,asc
+
+### Get class by id - 200
+GET http://localhost:8080/classes/1
+
+### Search classes by instructor - 200
+GET http://localhost:8080/classes/search?instructor=Anna Svensson
+
+### Get bookings for class - 200
+GET http://localhost:8080/classes/1/bookings
+
+### Get spots remaining - 200
+GET http://localhost:8080/classes/1/spots-remaining
+
+### Get available classes - 200
+GET http://localhost:8080/classes/available
+
+### ===== PROTECTED ENDPOINTS (AUTH REQUIRED) =====
+
+### Create class as ADMIN - 201
+POST http://localhost:8080/classes
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Power Yoga",
+  "instructor": "Anna",
+  "description": "Strong yoga session",
+  "dayOfWeek": "Monday",
+  "startTime": "10:00",
+  "durationMinutes": 60,
+  "maxParticipants": 15
+}
+
+### Update class as ADMIN - 200
+PUT http://localhost:8080/classes/1
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Updated Yoga",
+  "instructor": "Anna",
+  "description": "Updated description",
+  "dayOfWeek": "Tuesday",
+  "startTime": "11:00",
+  "durationMinutes": 60,
+  "maxParticipants": 12
+}
+
+### Delete class as ADMIN - 204
+DELETE http://localhost:8080/classes/10
+Authorization: Bearer {{adminToken}}
+
+### Delete booking as ADMIN - 204
+DELETE http://localhost:8080/bookings/1
+Authorization: Bearer {{adminToken}}
+
+
+### Create booking as USER - 201
+POST http://localhost:8080/classes/1/bookings
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "participantName": "Anya User",
+  "email": "anya.user@example.com"
+}
+
+
+### ===== 400 BAD REQUEST =====
+
+### Create class - 400 (missing required fields) as ADMIN
+POST http://localhost:8080/classes
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "instructor": "",
+  "dayOfWeek": "",
+  "startTime": "",
+  "durationMinutes": 5,
+  "maxParticipants": 0
+}
+
+### ===== 401 UNAUTHORIZED =====
+
+### Create class - 401 (no auth)
+POST http://localhost:8080/classes
+Content-Type: application/json
+
+{
+  "name": "No Auth Class",
+  "instructor": "Test",
+  "description": "Should fail",
+  "dayOfWeek": "Monday",
+  "startTime": "10:00",
+  "durationMinutes": 60,
+  "maxParticipants": 10
+}
+
+### ===== 404 NOT FOUND =====
+
+### Get class by id (public) - 404
+GET http://localhost:8080/classes/999
+
+### Update class as ADMIN - 404
+PUT http://localhost:8080/classes/999
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Ghost Class",
+  "instructor": "Nobody",
+  "description": "Does not exist",
+  "dayOfWeek": "Monday",
+  "startTime": "10:00",
+  "durationMinutes": 60,
+  "maxParticipants": 10
+}
+
+### Delete class as ADMIN - 404
+DELETE http://localhost:8080/classes/999
+Authorization: Bearer {{adminToken}}
+
+### Create booking as USER - 404
+POST http://localhost:8080/classes/999/bookings
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "participantName": "Ghost User",
+  "email": "ghost@example.com"
+}
+
+### Get bookings for class - 404
+GET http://localhost:8080/classes/999/bookings
+
+### Delete booking as ADMIN - 404
+DELETE http://localhost:8080/bookings/999
+Authorization: Bearer {{adminToken}}
+
+### Get spots remaining - 404
+GET http://localhost:8080/classes/999/spots-remaining
+
+### ===== 409 CONFLICT =====
+
+### Step 1. Create class for 409 test as ADMIN - 201 (1 participant max)
+POST http://localhost:8080/classes
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "409 Test Class",
+  "instructor": "Test Admin",
+  "description": "Class for capacity conflict test",
+  "dayOfWeek": "Friday",
+  "startTime": "15:00",
+  "durationMinutes": 45,
+  "maxParticipants": 1
+}
+
+> {% client.global.set("fullClassId", response.body.id); %}
+
+### Step 2. Create booking as USER - 201 (the only spot was booked)
+POST http://localhost:8080/classes/{{fullClassId}}/bookings
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "participantName": "First User",
+  "email": "first@example.com"
+}
+
+### Step 3. Create booking as USER - 409 CONFLICT (class is full)
+POST http://localhost:8080/classes/{{fullClassId}}/bookings
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "participantName": "Second User",
+  "email": "second@example.com"
+}
