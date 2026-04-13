@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymBook — Class Booking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+    <div class="nav-inner">
+        <a class="nav-logo" href="#">Gym<span>Book</span></a>
+        <div class="nav-right">
+            <div id="navUser" class="nav-user hidden">
+                <span id="navRoleBadge" class="role-badge"></span>
+                <div id="navAvatar" class="avatar-circle"></div>
+                <button id="logoutButton" class="btn-ghost">Sign out</button>
+            </div>
+            <button id="openAuthBtn" class="btn-accent">Login / Register</button>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== AUTH MODAL ===== -->
+<div id="authModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+        <button class="modal-close" id="closeAuthBtn">&#x2715;</button>
+        <div class="modal-tabs">
+            <button class="mtab active" data-tab="login">Login</button>
+            <button class="mtab" data-tab="register">Register</button>
+        </div>
+        <div id="tab-login" class="tab-content">
+            <p class="form-hint">Enter your credentials to continue</p>
+            <form id="loginForm">
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit" class="btn-submit">Login</button>
+            </form>
+        </div>
+        <div id="tab-register" class="tab-content hidden">
+            <p class="form-hint">Create a new account</p>
+            <form id="registerForm">
+                <input type="text" id="registerUsername" placeholder="Choose a username" required>
+                <input type="password" id="registerPassword" placeholder="Choose a password" required>
+                <button type="submit" class="btn-submit">Create account</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+    <div class="hero-inner">
+        <div class="hero-left">
+            <h1>Find your <em>next class</em></h1>
+            <p>Book sessions, track spots, manage your schedule — all in one place.</p>
+        </div>
+        <div class="hero-right">
+            <form id="searchForm" class="hero-search">
+                <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="6.5" cy="6.5" r="4.5"/><line x1="10.2" y1="10.2" x2="14" y2="14"/>
+                </svg>
+                <input type="text" id="searchInstructor" placeholder="Search by instructor…">
+                <button type="submit">Search</button>
+            </form>
+            <div class="hero-filters">
+                <button id="loadAllClassesButton" class="btn-hero-filter">All classes</button>
+                <button id="loadAvailableClassesButton" class="btn-hero-filter">Available only</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main-layout">
+
+    <section class="classes-section">
+        <div class="section-header">
+            <h2>Classes</h2>
+        </div>
+        <div id="classesContainer" class="classes-grid">
+            <p class="placeholder-text">Loading classes…</p>
+        </div>
+    </section>
+
+    <aside class="side-panel">
+
+        <div class="panel-block hidden" id="classIdSearchBlock"> <!-- добавлено -->
+            <h3 class="panel-title">Find by ID</h3> <!-- добавлено -->
+            <form id="classIdSearchForm" class="mini-search-form"> <!-- добавлено -->
+                <input type="number" id="classIdSearchInput" placeholder="Class ID" min="1" required> <!-- добавлено -->
+                <button type="submit" class="btn-submit btn-mini">Find</button> <!-- добавлено -->
+            </form>
+        </div>
+
+        <div class="panel-block" id="classDetailsBlock">
+            <h3 class="panel-title">Class details</h3>
+            <div id="classDetailsContainer">
+                <p class="placeholder-text">Select a class to see details.</p>
+            </div>
+        </div>
+        <div class="panel-block hidden" id="bookingsBlock">
+            <h3 class="panel-title">Bookings</h3>
+            <div id="bookingsContainer">
+                <p class="placeholder-text">Select a class to see bookings.</p>
+            </div>
+        </div>
+    </aside>
+</main>
+
+<!-- ===== ADMIN CLASS MODAL ===== -->
+<div id="adminModal" class="modal-backdrop hidden">
+    <div class="modal-box wide">
+        <button class="modal-close" id="closeAdminBtn">&#x2715;</button>
+        <h2 id="adminModalTitle">Add class</h2>
+        <form id="adminClassForm">
+            <input type="hidden" id="adminClassId">
+            <div class="form-grid">
+                <input type="text" id="adminName" placeholder="Class name" required>
+                <input type="text" id="adminInstructor" placeholder="Instructor" required>
+                <input type="text" id="adminDescription" placeholder="Description" class="full">
+                <input type="text" id="adminDayOfWeek" placeholder="Day of week (e.g. Monday)" required>
+                <input type="text" id="adminStartTime" placeholder="Start time (10:00)" required>
+                <input type="number" id="adminDurationMinutes" placeholder="Duration min (15–120)" min="15" max="120" required>
+                <input type="number" id="adminMaxParticipants" placeholder="Max participants (1–50)" min="1" max="50" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-submit" id="adminSaveButton">Save class</button>
+                <button type="button" id="adminResetButton" class="btn-ghost-dark">Clear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== BOOK MODAL ===== -->
+<div id="bookModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+        <button class="modal-close" id="closeBookBtn">&#x2715;</button>
+        <h2 id="bookModalTitle">Book this class</h2>
+        <p class="form-hint" id="bookModalMeta"></p>
+
+        <div class="book-form">
+            <input type="hidden" id="bookClassId">
+
+            <input type="text" id="bookName" placeholder="Your full name" required>
+            <input type="email" id="bookEmail" placeholder="Your email" required>
+
+            <div class="form-actions">
+                <button id="confirmBookBtn" class="btn-submit">Confirm booking</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

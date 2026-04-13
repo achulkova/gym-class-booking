@@ -45,7 +45,10 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/index.html",
-                                "/favicon.ico").permitAll()
+                                "/favicon.ico",
+                                "/style.css",
+                                "/app.js"
+                        ).permitAll()
                         //
                         .requestMatchers("/alive").permitAll()
                         // Swagger - public access
