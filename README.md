@@ -1,73 +1,135 @@
-# Gym Class Booking API
+# Gym Class Booking
 
-A RESTful API for managing gym classes and bookings with **JWT authentication**, built using **Spring Boot**, with a lightweight **Vanilla JavaScript frontend**.
-This project demonstrates a complete backend application with authentication, validation, business rules, and comprehensive testing.
+Gym Class Booking is a full-stack web application for managing gym classes and bookings, featuring JWT-based authentication, role-based access control, and a lightweight Vanilla JavaScript frontend.
+
+The project demonstrates backend development with Spring Boot, REST APIs, authentication and authorization, database persistence, validation, business logic, automated testing, and frontend integration.
 
 ---
 
 ## Tech Stack
 
-* **Java 21**
-* **Spring Boot**
-* Spring Web
-* Spring Data JPA
-* Spring Security
-* JWT (jjwt)
-* H2 Database
-* Maven
-* JUnit 5 + Mockito
-* HTML, CSS, Vanilla JavaScript (Frontend)
+### Backend
 
-## Features
+- Java 21
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- Hibernate
+- Spring Security
+- JWT (JJWT)
+- Spring Validation
+- Maven
 
-### Authentication (JWT)
+### Database
 
-* User registration (`POST /auth/register`)
-* Login with JWT token (`POST /auth/login`)
-* Role-based access control (`USER`, `ADMIN`)
-* Stateless authentication using **JWT**
+- H2 Database
 
----
+### Testing
+
+- JUnit 5
+- Mockito
+- Spring Boot Test
+- Spring MVC Test
+- Spring Data JPA Test
+
+### API Documentation
+
+- Swagger / OpenAPI
+- SpringDoc
 
 ### Frontend
 
-* Simple UI built with **HTML, CSS, and Vanilla JavaScript**
-* Communicates with backend via `fetch` API
-* Role-based interface (different features for USER and ADMIN)
-* Booking, class management, and search available via UI
-* Uses **localStorage** to persist JWT session
+- HTML
+- CSS
+- Vanilla JavaScript
+- Fetch API
+- LocalStorage
 
 ---
 
-### Gym Classes
+## Features
 
-* Create, update, delete classes (**ADMIN only**)
-* Get all classes (with pagination & sorting)
-* Search classes by instructor
-* View class details with bookings
+### Authentication & Authorization
+
+- User registration
+- Login with JWT authentication
+- Stateless authentication using JWT
+- Password hashing with BCrypt
+- Role-based access control
+- `USER` and `ADMIN` roles
+- Protected REST API endpoints
+
+### Gym Class Management
+
+- View available gym classes
+- View class details
+- Create gym classes
+- Update gym classes
+- Delete gym classes
+- Pagination and sorting
+- Search classes by instructor
+- View bookings associated with a class
+
+Class management operations are restricted according to user roles.
+
+### Booking Management
+
+- Book a spot in a gym class
+- View bookings for a class
+- Delete bookings
+- Capacity validation to prevent overbooking
+
+When a class reaches its maximum capacity, the API returns:
+
+```text
+409 Conflict
+```
+
+### Frontend
+
+The application includes a lightweight frontend built with HTML, CSS, and Vanilla JavaScript.
+
+The frontend:
+
+- Communicates with the backend using the Fetch API
+- Supports user registration and login
+- Stores the JWT session in LocalStorage
+- Provides role-based functionality
+- Allows users to browse and search gym classes
+- Allows authenticated users to create bookings
+- Provides administrative class and booking management
 
 ---
 
-### Bookings
+## REST API
 
-* Book a spot in a class (**USER / ADMIN**)
-* View bookings per class
-* Delete booking (**ADMIN only**)
+The application exposes REST endpoints for authentication, gym classes, and bookings.
+
+Examples:
+
+```text
+POST /auth/register
+POST /auth/login
+```
+
+Authentication-protected endpoints require a JWT token.
+
+Swagger UI provides interactive documentation for the complete API.
 
 ---
 
-### Business Rules
+## Validation & Error Handling
 
-* ❗ Prevent overbooking
-  → Returns **409 Conflict** when class is full
+The application uses Bean Validation for request validation, including annotations such as:
 
----
+```text
+@NotBlank
+@Email
+```
 
-### Validation & Error Handling
+A global exception handling mechanism provides standardized API error responses.
 
-* Bean Validation (`@NotBlank`, `@Email`, etc.)
-* Global exception handling
-* Standardized error responses:
+Example:
 
 ```json
 {
@@ -79,65 +141,237 @@ This project demonstrates a complete backend application with authentication, va
 
 ---
 
-## Running the Project
+## Security
 
-### 1. Clone repo
+The application uses Spring Security with stateless JWT authentication.
 
-```bash
-git clone https://github.com/achulkova/05_java_enterprice_assignment_4_individual.git
+The JWT signing secret is **not stored in the source code**.
+
+Instead, the application reads it from the following environment variable:
+
+```text
+JWT_SECRET
 ```
 
-### 2. Run backend
+The application configuration references it as:
 
-```bash
-mvn spring-boot:run
+```properties
+jwt.secret=${JWT_SECRET}
 ```
 
-### 3. Open application
+This allows different secrets to be used for local development and production without exposing credentials in the repository.
 
-Open in your browser: http://localhost:8080/
+---
 
-## 🌐 API Access
+## Running the Project Locally
 
-* Swagger UI:
-  http://localhost:8080/swagger-ui.html
+### 1. Clone the repository
 
-* H2 Console:
-  http://localhost:8080/h2-console
+```bash
+git clone https://github.com/achulkova/gym-class-booking.git
+cd gym-class-booking
+```
 
+### 2. Configure the JWT secret
+
+The application requires the `JWT_SECRET` environment variable.
+
+#### Windows PowerShell
+
+```powershell
+$env:JWT_SECRET="your-secret-key"
+```
+
+Use a sufficiently long random value for the secret.
+
+### 3. Run the application
+
+Using the Maven Wrapper:
+
+#### Windows
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+#### macOS / Linux
+
+```bash
+./mvnw spring-boot:run
+```
+
+The application will start on:
+
+```text
+http://localhost:8080
+```
+
+Open the application in your browser:
+
+```text
+http://localhost:8080/
+```
+
+---
+
+## API Documentation
+
+After starting the application, Swagger UI is available at:
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+OpenAPI documentation is available at:
+
+```text
+http://localhost:8080/v3/api-docs
+```
+
+---
+
+## Database
+
+The project currently uses an in-memory H2 database.
+
+The database is initialized when the application starts and recreated when the application restarts.
+
+For local development, the H2 Console is available at:
+
+```text
+http://localhost:8080/h2-console
+```
+
+Default local configuration:
+
+```text
+JDBC URL: jdbc:h2:mem:gymDB
+Username: sa
+Password: sa
+```
 
 ---
 
 ## Testing
 
-This project includes **multiple test types**:
+The project includes multiple levels of automated testing.
 
-* ✅ Controller tests (`@WebMvcTest`)
-* ✅ Service unit tests (Mockito)
-* ✅ Repository tests (`@DataJpaTest`)
-* ✅ Integration tests (`@SpringBootTest` + JWT)
+### Controller Tests
 
-Run all tests:
+Controller behavior is tested using:
+
+```text
+@WebMvcTest
+```
+
+### Service Tests
+
+Business logic is tested using JUnit 5 and Mockito.
+
+### Repository Tests
+
+Database repository behavior is tested using:
+
+```text
+@DataJpaTest
+```
+
+### Integration Tests
+
+Application flows, including authentication and JWT-protected functionality, are tested using:
+
+```text
+@SpringBootTest
+```
+
+Run all tests with:
+
+#### Windows
+
+```powershell
+.\mvnw.cmd test
+```
+
+#### macOS / Linux
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 ---
 
 ## HTTP Requests
 
-Pre-configured requests are available in:
+Preconfigured HTTP requests for testing the API are available in:
 
-```
+```text
 generated-requests.http
 ```
 
-Includes:
+They include examples for:
 
-* Login flow
-* JWT usage
-* Protected endpoints
-* Error scenarios (401, 403, 404, 409)
+- Registration and login
+- JWT authentication
+- Protected endpoints
+- Gym class operations
+- Booking operations
+- Authorization scenarios
+- Error responses such as `401`, `403`, `404`, and `409`
 
+---
 
+## Project Structure
+
+```text
+src/
+├── main/
+│   ├── java/
+│   │   └── se.edugrade.java25.enterprise.gym/
+│   │       ├── controller/
+│   │       ├── dto/
+│   │       ├── exception/
+│   │       ├── model/
+│   │       ├── repository/
+│   │       ├── security/
+│   │       └── service/
+│   │
+│   └── resources/
+│       ├── static/
+│       │   ├── index.html
+│       │   ├── app.js
+│       │   └── style.css
+│       ├── application.properties
+│       └── data.sql
+│
+└── test/
+```
+
+The Spring Boot application serves both the REST API and the static frontend.
+
+---
+
+## Architecture
+
+```text
+Browser
+   │
+   │ HTML / CSS / JavaScript
+   │
+   ▼
+Spring Boot Application
+   │
+   ├── REST Controllers
+   │
+   ├── Spring Security + JWT
+   │
+   ├── Service Layer
+   │
+   ├── Spring Data JPA / Hibernate
+   │
+   ▼
+H2 Database
+```
+
+---
+
+## Repository
