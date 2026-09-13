@@ -485,7 +485,7 @@ input:focus {
     position: absolute;
     inset: 0 auto 0 0;
     width: 4px;
-    background: linear-gradient(180deg, #f472b6 0%, #818cf8 100%);
+    background: var(--accent);
 }
 
 .card-header {

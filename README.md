@@ -2,7 +2,19 @@
 
 Gym Class Booking is a full-stack web application for managing gym classes and bookings, featuring JWT-based authentication, role-based access control, and a lightweight Vanilla JavaScript frontend.
 
-The project demonstrates backend development with Spring Boot, REST APIs, authentication and authorization, database persistence, validation, business logic, automated testing, and frontend integration.
+The project demonstrates backend development with Spring Boot, REST APIs, authentication and authorization, database persistence, validation, business logic, automated testing, containerization, and frontend integration.
+
+---
+
+## Live Demo
+
+The application is deployed on Render and is available here:
+
+**Live Demo:** [Gym Class Booking](https://gym-class-booking.onrender.com/)
+
+> **Note:** The live demo is hosted on a free Render instance. The service may spin down after a period of inactivity, so the first request can take up to a minute or more while the application wakes up. Subsequent requests are significantly faster.
+
+> **Demo data:** The application currently uses an in-memory H2 database. User accounts, bookings, and other runtime changes are reset whenever the application instance restarts or is redeployed.
 
 ---
 
@@ -44,6 +56,11 @@ The project demonstrates backend development with Spring Boot, REST APIs, authen
 - Vanilla JavaScript
 - Fetch API
 - LocalStorage
+
+### DevOps & Deployment
+
+- Docker
+- Render
 
 ---
 
@@ -214,6 +231,34 @@ http://localhost:8080/
 
 ---
 
+## Running with Docker
+
+The application can also be built and run as a Docker container.
+
+### 1. Build the Docker image
+
+From the project root directory:
+
+```bash
+docker build -t gym-class-booking .
+```
+
+### 2. Run the container
+
+```bash
+docker run -p 8080:8080 -e JWT_SECRET="your-secret-key" gym-class-booking
+```
+
+The application will be available at:
+
+```text
+http://localhost:8080
+```
+
+The production deployment on Render also runs the application as a Docker container.
+
+---
+
 ## API Documentation
 
 After starting the application, Swagger UI is available at:
@@ -374,4 +419,20 @@ H2 Database
 
 ---
 
-## Repository
+## Deployment
+
+The application is containerized with Docker and deployed as a Render Web Service.
+
+Production-specific configuration is provided through environment variables, including:
+
+```text
+JWT_SECRET
+PORT
+H2_CONSOLE_ENABLED
+```
+
+The H2 Console is disabled in the deployed environment.
+
+The `/alive` endpoint is used as the Render health check endpoint.
+
+---
